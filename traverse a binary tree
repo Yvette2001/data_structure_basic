@@ -1,0 +1,122 @@
+#include<iostream>
+#include<stack>
+using namespace std;
+template<class T>
+struct BNode
+{
+	T data;
+	BNode<T>* lc, * rc;
+	BNode<T>()
+	{
+		lc = rc = NULL;
+	}
+	BNode<T>* insertAsLc(T x)
+	{
+		lc = new BNode<T>;
+		lc->data = x;
+		return lc;
+	}
+	BNode<T>* insertAsRc(T x)
+	{
+		rc = new BNode<T>;
+		rc->data = x;
+		return rc;
+	}
+};
+template<class T,class VST>
+void preTraverse(BNode<T>*BT,VST&visit)
+{
+	stack<BNode<T>*>S;
+	BNode<T>* p = BT;
+	while (p||S.size())
+	{
+		if (p)
+		{
+			visit(p->data);
+			S.push(p);
+			p = p->lc;
+		}
+		else
+		{
+			p = S.top();
+			S.pop();
+			p = p->rc;
+		}
+		
+	}
+}
+template<class T, class VST>
+void inTraverse(BNode<T>* BT, VST& visit)
+{
+	stack<BNode<T>*>S;
+	BNode<T>* p = BT;
+	while (p || S.size())
+	{
+		if (p)
+		{
+			S.push(p);
+			p = p->lc;
+		}
+		else
+		{
+			p = S.top();
+			S.pop();
+			visit(p->data);
+			p = p->rc;
+		}
+
+	}
+}
+template<class T,class VST>
+void postTraverse(BNode<T>* BT, VST& visit)
+{
+	stack<BNode<T>*>S;
+	BNode<T>* p = BT, * q = NULL;
+	while (p || S.size())
+	{
+		if (p && p != q)
+		{
+			S.push(p);
+			p = p->lc;
+		}
+		else
+		{
+			if (S.empty())break;
+			p = S.top();
+			S.pop();
+			if (p->rc && p->rc != q)
+			{
+				S.push(p);
+				p = p->rc;
+			}
+			else
+			{
+				visit(p->data);
+				q = p;
+			}
+		}
+	}
+}
+template<class T>
+void print(T data)
+{
+	cout << data << ' ';
+}
+
+int main()
+{
+	BNode<char>* tree = new BNode<char>;
+	tree->data = 'A';
+	BNode<char>* p = tree->insertAsLc('B');
+	p->insertAsLc('C');
+	p = p->insertAsRc('D');
+	p->insertAsLc('E');
+	p->lc->insertAsRc('G');
+	p->insertAsRc('F');
+	preTraverse<char>(tree, print<char>);
+	cout << endl;
+	inTraverse<char>(tree, print<char>);
+	cout << endl;
+	postTraverse<char>(tree, print<char>);
+	return 0;
+}
